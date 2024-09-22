@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="2.0.0">
+    <meta creation_time="1720611902" app="Insta360 Studio 5.2.0" version="5.2.0"/>
+    <file_group count="1" folder="/Users/kei.a/Pictures/insta360" type="video_normal">
+        <file name="VID_20240630_103416_00_060.mp4"/>
+    </file_group>
+    <schemes default="プロジェクト1">
+        <scheme app_data_source="" id="プロジェクト1" app_data_ratio="" app_data_types="" creation="2024.07.10 20:45:02.260" app_data_mode="" last_edit_time="2024.07.10 20:45:02" app_data_id="">
+            <preference ratio_height="9" trim_end="49082" duration="49082" trim_start="0" favourite="0" ratio_width="16">
+                <bullet_time distance="0.8125" fov="1.0421360963658142"/>
+                <rendering stabilization="1" projection="64" distance="0.59999999999999998" cold_shoe="0" yaw="0" dewarp="0" use_custom_transform_params="0" motion_blur="0" ai_raw="0" fov="1.3089969389957472" cooling_shell="0" pitch="0" roll="0" rotate_angle="0" blend_angle="0" stab_level="0" dewarp_mode="0" directional_lock="0" alpha="1" accessory="0" stab_type="0">
+                    <play_rate/>
+                </rendering>
+                <audio volume="0.5" denoise_type="0"/>
+                <optimization>
+                    <calibration offset=""/>
+                    <stitching color_enhancement="0" under_water_correction="0" ltm_strength="30" local_tone_mapping="0" under_water_strength="80" optical_flow_stitching="0" image_fusion="0" under_water_balance="0" is_selfie="0" color_plus_strength="30" motion_blur_edited="0" motion_blur_strength="50" audio_mode="8" dynamic_stitching="0" horizontal_correct_angle="0" direct_focus="0" drone_suite="0" ai_stitch="0" motion_blur_threshold="85" horizontal_correct_default_angle="0" horizontal_correct="0"/>
+                </optimization>
+                <logo enable_logo="0" logo_corner_radius="0" logo_location="0" logo_size="0.30000001" logo_feather="0" selected_logo="" logo_rotate="0"/>
+            </preference>
+            <timeline app_import_id="" duration_ms="49082">
+                <recording>
+                    <keyframes/>
+                    <transitions/>
+                    <deep_track_areas/>
+                </recording>
+            </timeline>
+            <dashboard_setting>
+                <style speed_unit="kmh" style_name="default" style_font_color="#ffffff" style_trans="100" use_style_uuid="" style_uuid="" show_mask_area="false" style_type="default">
+                    <item_style_list>
+                        <item_style item_type="speed" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="altitude" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="direction" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="distance" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="slope" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="tracks" item_color="" item_style_trans="100" item_visible="false"/>
+                    </item_style_list>
+                    <style_aspect_ratio_list/>
+                </style>
+            </dashboard_setting>
+            <pano_animation>
+                <configs/>
+            </pano_animation>
+        </scheme>
+        <scheme app_data_source="" id="backup" app_data_ratio="" app_data_types="" creation="2024.07.10 20:45:02.263" app_data_mode="" last_edit_time="2024.07.10 20:45:02" app_data_id="">
+            <preference ratio_height="9" trim_end="49082" duration="49082" trim_start="0" favourite="0" ratio_width="16">
+                <bullet_time distance="0.8125" fov="1.0421360963658142"/>
+                <rendering stabilization="1" projection="64" distance="0.59999999999999998" cold_shoe="0" yaw="0" dewarp="0" use_custom_transform_params="0" motion_blur="0" ai_raw="0" fov="1.3089969389957472" cooling_shell="0" pitch="0" roll="0" rotate_angle="0" blend_angle="0" stab_level="0" dewarp_mode="0" directional_lock="0" alpha="1" accessory="0" stab_type="0">
+                    <play_rate/>
+                </rendering>
+                <audio volume="0.5" denoise_type="0"/>
+                <optimization>
+                    <calibration offset=""/>
+                    <stitching color_enhancement="0" under_water_correction="0" ltm_strength="30" local_tone_mapping="0" under_water_strength="80" optical_flow_stitching="0" image_fusion="0" under_water_balance="0" is_selfie="0" color_plus_strength="30" motion_blur_edited="0" motion_blur_strength="50" audio_mode="8" dynamic_stitching="0" horizontal_correct_angle="0" direct_focus="0" drone_suite="0" ai_stitch="0" motion_blur_threshold="85" horizontal_correct_default_angle="0" horizontal_correct="0"/>
+                </optimization>
+                <logo enable_logo="0" logo_corner_radius="0" logo_location="0" logo_size="0.30000001" logo_feather="0" selected_logo="" logo_rotate="0"/>
+            </preference>
+            <timeline app_import_id="" duration_ms="49082">
+                <recording>
+                    <keyframes/>
+                    <transitions/>
+                    <deep_track_areas/>
+                </recording>
+            </timeline>
+            <dashboard_setting>
+                <style speed_unit="kmh" style_name="default" style_font_color="#ffffff" style_trans="100" use_style_uuid="" style_uuid="" show_mask_area="false" style_type="default">
+                    <item_style_list>
+                        <item_style item_type="speed" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="altitude" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="direction" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="distance" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="slope" item_color="" item_style_trans="100" item_visible="false"/>
+                        <item_style item_type="tracks" item_color="" item_style_trans="100" item_visible="false"/>
+                    </item_style_list>
+                    <style_aspect_ratio_list/>
+                </style>
+            </dashboard_setting>
+            <pano_animation>
+                <configs/>
+            </pano_animation>
+        </scheme>
+    </schemes>
+    <bigboom>
+        <config>
+            <aspect_ratio height="9" width="16"/>
+        </config>
+        <clips/>
+    </bigboom>
+</project>

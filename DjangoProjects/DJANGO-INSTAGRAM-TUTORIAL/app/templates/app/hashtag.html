@@ -1,0 +1,91 @@
+{% extends 'app/base.html' %}
+
+{% block content %}
+
+<h4 class="mb-3">検索ハッシュタグ「{{ hashtag }}」</h4>
+
+<h4 class="mb-3">投稿推移</h4>
+<div class="card p-3 mb-3">
+    <canvas id="hashtag_chart" height="400"></canvas>
+</div>
+
+<h4 class="mb-3">検索結果</h4>
+
+<div class="row">
+    {% for index, row in hashtag_media_data.iterrows %}
+        <div class="col-sm-3 mb-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <a href="{{ row.permalink }}" target="_blank">
+                            {% if row.media_type == 'VIDEO' %}
+                            <div class="embed-responsive embed-responsive-1by1 mb-3">
+                                <iframe src="{{ row.media_url }}" allowfullscreen class="embed-responsive-item"></iframe>
+                            </div>
+                        {% else %}
+                            <div class="media_image">
+                                <img src="{{ row.media_url }}" alt="" class="img card-img-top">
+                            </div>
+                        {% endif %}
+                        </a>
+                    </div>
+                    <div class="d-flex justify-content-betweeen">
+                        <div class="">
+                            <i class="fas fa-heart text-secondary mr-2"></i>
+                            <span class="mr-3">{{ row.like_count }}</span>
+                            <i class="fas fa-comment text-secondary mr-2"></i>
+                            <span>{{ row.comments_count }}</span>
+                        </div>
+                        <div class="">{{ row.timestamp }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const hashtag_data = JSON.parse('{{ hashtag_count_data|safe }}');
+    const hashtag_ctx = document.getElementById('hashtag_chart');
+    const hashtag = new Chart(hashtag_ctx, {
+        type: 'line',
+        data: {
+            labels: hashtag_data.label_data,
+            datasets: [
+                {
+                    label: '投稿数',
+                    data: hashtag_data.count_data,
+                    borderColor: "rgba(207,46,146,0.5)",
+                    backgroundColor: "rgba(207,46,146,0.5)",
+                }
+            ]
+        },
+        options: {
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
+            tooltips: {
+                mode: 'nearest',
+                intersect: false
+            },
+            responsive: true,
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        min: 0,
+                        stepSize: 10
+                    }
+                }]
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

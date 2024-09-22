@@ -1,0 +1,15 @@
+Machine:   aizawakeinoMacBook-Pro.local in domain 
+User:      kei.a
+Mode:      64-Bit
+Display:   Display not detectable
+Driver:    Driver not detectable
+CPU:       Name: Intel(R) Core(TM) i9-9880H CPU @ 2.30GHz
+           Model: 158, Family: 6, Stepping: 13 
+           Total Threads: 16
+           Features: MMX SSE SSE2 SSE3 SSSE3 SSE4.1 SSE4.2 AVX F16C FMA AVX2 RDTSCP CLMUL AES RDRAND RDSEED POPCNT ABM BMI BMI2 ADX MOVBE
+Base path: /Applications/Adobe Premiere Pro 2024/Adobe Premiere Pro 2024.app/Contents/MacOS/
+Arguments: 
+
+12:13:58 [IrLog]           LogFile initialized
+12:13:58 [GlobalSettings]  Loading user settings from /Users/kei.a/Documents/Adobe/Lumetri/9.0/settings/User_Settings.xml
+12:13:58 [GlobalSettings]  Failed to load user settings, using default values.

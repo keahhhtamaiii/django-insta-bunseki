@@ -1,0 +1,226 @@
+{% extends 'app/base.html' %}
+{% block content %}
+
+<h3 class="mb-3">ダッシュボード</h3>
+<div class="d-flex align-items-center justify-content-center flex-column">
+    <div class="profile_picture">
+        <img src="{{ account_data.profile_picture_url }}" alt="" class="card-img-top rounded-circle">
+    </div>
+    <h4 class="my-3">{{ account_data.username }}</h4>
+</div>
+
+<h4 class="mt-4">サマリー</h4>
+
+<div class="card-columns">
+    <div class="card p-3">
+        <h5>フォロワー数</h5>
+        <div class="display-4">{{ account_data.followers_count }}</div>
+        <p>{{ today }}</p>
+    </div>
+    <div class="card p-3">
+        <h5>フォロー数</h5>
+        <div class="display-4">{{ account_data.follows_count }}</div>
+        <p>{{ today }}</p>
+    </div>
+    <div class="card p-3">
+        <h5>投稿数</h5>
+        <div class="display-4">{{ account_data.media_count }}</div>
+        <p>{{ today }}</p>
+    </div>
+</div>
+
+<h4 class="mt-4">ユーザー推移</h4>
+<div class="card-columns">
+    <div class="card p-3">
+        <canvas id="follower_count_chart"></canvas>
+    </div>
+    <div class="card p-3">
+        <canvas id="follows_count_chart"></canvas>
+    </div>
+    <div class="card p-3">
+        <canvas id="ff_chart"></canvas>
+    </div>
+</div>
+
+<h4 class="mt-4">投稿推移</h4>
+<div class="card p-3">
+    <canvas id="post_chart" height="400"></canvas>
+</div>
+
+<h4 class="mt-4">最新投稿</h4>
+<div class="card p-3">
+    <div class="row">
+        <div class="col-md-4">
+            <a href="{{ insight_media_data.permalink }}">
+                {% if insight_media_data.media_type == 'VIDEO' %}
+                    <div class="embed-responsive embed-responsive-1by1 mb-3">
+                        <iframe src="{{ insight_media_data.media_url }}" allowfullscreen class="embed-responsive-item"></iframe>
+                    </div>
+                {% else %}
+                    <img src="{{ insight_media_data.media_url }}" alt="" class="card-img-top">
+                {% endif %}
+            </a>
+        </div>
+        <div class="col-md-8">
+            <div class="mb-3">
+                <td>{{ insight_media_data.caption|linebreaksbr }}</td>
+            </div>
+            <table class="table table-sm">
+                <tr>
+                    <td>投稿日</td>
+                    <td>{{ insight_media_data.timestamp }}</td>
+                </tr>
+                <tr>
+                    <td>インプレッション</td>
+                    <td>{{ insight_media_data.impression }}</td>
+                </tr>
+                <tr>
+                    <td>リーチ数</td>
+                    <td>{{ insight_media_data.reach }}</td>
+                </tr>
+                <tr>
+                    <td>いいね数</td>
+                    <td>{{ insight_media_data.like_count }}</td>
+                </tr>
+                <tr>
+                    <td>コメント数</td>
+                    <td>{{ insight_media_data.comments_count }}</td>
+                </tr>
+                <tr>
+                    <td>保存数</td>
+                    <td>{{ insight_media_data.save }}</td>
+                </tr>
+                <tr>
+                    <td>エンゲージメント</td>
+                    <td>{{ insight_media_data.engagement }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    const insight_data = JSON.parse('{{ insight_data|safe }}');
+    const follower_count_ctx = document.getElementById('follower_count_chart');
+    const follower_count = new Chart(follower_count_ctx, {
+        type: 'line',
+        data: {
+            labels: insight_data.label_data,
+            datasets: [
+                {
+                    label: 'フォロワー数',
+                    data: insight_data.follower_data,
+                    borderColor: "rgba(207,46,146,0.5)",
+                    backgroundColor: "rgba(207,46,146,0.5)",
+                }
+            ]
+        },
+        options: {
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
+            tooltips: {
+                mode: 'nearest',
+                intersect: false
+            },
+            responsive: true
+        }
+    });
+
+    const follows_count_ctx = document.getElementById('follows_count_chart');
+    const follows_count = new Chart(follows_count_ctx, {
+        type: 'line',
+        data: {
+            labels: insight_data.label_data,
+            datasets: [
+                {
+                    label: 'フォロー数',
+                    data: insight_data.follows_data,
+                    borderColor: "rgba(207,46,146,0.5)",
+                    backgroundColor: "rgba(207,46,146,0.5)",
+                }
+            ]
+        },
+        options: {
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
+            tooltips: {
+                mode: 'nearest',
+                intersect: false
+            },
+            responsive: true
+        }
+    });
+
+    const ff_ctx = document.getElementById('ff_chart');
+    const ff = new Chart(ff_ctx, {
+        type: 'line',
+        data: {
+            labels: insight_data.label_data,
+            datasets: [
+                {
+                    label: 'フォロー・フォロワー比率',
+                    data: insight_data.ff_data,
+                    borderColor: "rgba(207,46,146,0.5)",
+                    backgroundColor: "rgba(207,46,146,0.5)",
+                }
+            ]
+        },
+        options: {
+            elements: {
+                line: {
+                    tension: 0
+                }
+            },
+            tooltips: {
+                mode: 'nearest',
+                intersect: false
+            },
+            responsive: true
+        }
+    });
+
+    const post_ctx = document.getElementById('post_chart');
+    const post = new Chart(post_ctx, {
+        type: 'bar',
+        data: {
+            labels: insight_data.post_label_data,
+            datasets: [
+                {
+                    label: '投稿数',
+                    data: insight_data.count_data,
+                    backgroundColor: "rgba(207,105,57,0.5)",
+                },
+                {
+                    label: 'いいね数',
+                    data: insight_data.like_data,
+                    backgroundColor: "rgba(207,46,146,0.5)",
+                },
+                {
+                    label: 'コメント数',
+                    data: insight_data.comments_data,
+                    backgroundColor: "rgba(255,221,131,0.5)",
+                },
+            ]
+        },
+        options: {
+            tooltips: {
+                mode: 'nearest',
+                intersect: false
+            },
+            responsive: true
+        }
+    });
+
+</script>
+
+{% endblock %}

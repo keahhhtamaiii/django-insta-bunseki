@@ -1,0 +1,35 @@
+{% extends 'app/base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class="my-4">
+    <h2>ハッシュタグ検索</h2>
+</div>
+
+<div class="table-responsive search-table">
+    <table class="table">
+        <form method="POST">
+            {% csrf_token %}
+            <tbody>
+                <tr>
+                    <th scope="row">
+                        <label class="control-label">ハッシュタグ</label>
+                    </th>
+                    <td>
+                        {% render_field form.hashtag class='form-control' placeholder='ハッシュタグ' %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-center">
+                        <button class="btn btn-warning" type="submit">検索する</button>
+                    </td>
+                </tr>
+            </tbody>
+        </form>
+    </table>
+</div>
+
+<p>※ハッシュタグによっては検索に時間がかかります</p>
+
+{% endblock %}
