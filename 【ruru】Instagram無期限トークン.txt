@@ -1,0 +1,355 @@
+token1
+EAARPRz5ZCUEMBO4jQodcZCPoLUvwJEamEQgs3nBREEX7cceZC0Ei8iaGyFNmntOhi1letuE4XDWd866yZCNAYMZCF2MIi73Sy7evcgM01ieD0abOKCNctBfcploqyg2rNsZCok7dXCkPpR5MUa36hWZBd4oO9zkcGEwbPHzGnblByMe19ofDtzuFZCFzyMUHch1Sm9GB9RjGjQ5oUg9gtL0kpa8pkjTZB
+
+appID
+1213067316645955
+
+151156216e9a03721c7f344a7d35fa0d
+
+https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id=1213067316645955&client_secret=151156216e9a03721c7f344a7d35fa0d&fb_exchange_token=EAARPRz5ZCUEMBO4jQodcZCPoLUvwJEamEQgs3nBREEX7cceZC0Ei8iaGyFNmntOhi1letuE4XDWd866yZCNAYMZCF2MIi73Sy7evcgM01ieD0abOKCNctBfcploqyg2rNsZCok7dXCkPpR5MUa36hWZBd4oO9zkcGEwbPHzGnblByMe19ofDtzuFZCFzyMUHch1Sm9GB9RjGjQ5oUg9gtL0kpa8pkjTZB
+
+
+token2
+EAARPRz5ZCUEMBOykiNp41l78HBwpxMuqiO2TezhzEMD1dZB0btVv9MBReUmD0zUUCZCCGAN7ZBkmr2ZCwZBTxuyTYNmj6QkqxTGzPcJub7oVQbjD651ZBWgzsQ2DRTb2vaFQOwbrK13AUpI4ZCr3mtMZBCiJ05ZAdZCYYSQOqri8s89lv2ApZBZCdoemPR4Bb
+
+https://graph.facebook.com/v19.0/me?access_token=EAARPRz5ZCUEMBOykiNp41l78HBwpxMuqiO2TezhzEMD1dZB0btVv9MBReUmD0zUUCZCCGAN7ZBkmr2ZCwZBTxuyTYNmj6QkqxTGzPcJub7oVQbjD651ZBWgzsQ2DRTb2vaFQOwbrK13AUpI4ZCr3mtMZBCiJ05ZAdZCYYSQOqri8s89lv2ApZBZCdoemPR4Bb
+
+id 
+2524446627747500
+
+https://graph.facebook.com/v19.0/2524446627747500/accounts?access_token=EAARPRz5ZCUEMBOykiNp41l78HBwpxMuqiO2TezhzEMD1dZB0btVv9MBReUmD0zUUCZCCGAN7ZBkmr2ZCwZBTxuyTYNmj6QkqxTGzPcJub7oVQbjD651ZBWgzsQ2DRTb2vaFQOwbrK13AUpI4ZCr3mtMZBCiJ05ZAdZCYYSQOqri8s89lv2ApZBZCdoemPR4Bb
+
+
+token3
+EAARPRz5ZCUEMBOz0j7ZByLNjybFu3ZBS9xoAC3vqRqqLV24ppAeK0bZApivf3zGjCRYIjkylbTiMoyuuoKKpGMP0dydM2c5zlEZCAGtE0bAXsUoPz8bW9weqZB1XUj3VmNMLjnBej6zTptBD1fosKqt0ehwy5EwYJ6yKKgQGvu1RSLocELK87R3iXdrMKaQ7sZD
+
+business ID
+17841457355149486
+
+
+from django.shortcuts import render,redirect
+from django.views.generic import View
+from datetime import datetime, date
+from django.utils.timezone import localtime
+from django.conf import settings
+from .models import Insight, Post, HashTag
+from .forms import HashTagForm
+import requests
+import json
+import math
+import pandas as pd
+
+
+def get_credentials():
+    credentials = {}
+    credentials['access_token'] = settings.ACCESS_TOKEN
+    credentials['instagram_account_id'] = settings.INSTAGRAM_ACCOUNT_ID
+    credentials['graph_domain'] = 'https://graph.facebook.com/'
+    credentials['graph_version'] = 'v8.0'
+    credentials['endpoint_base'] = credentials['graph_domain'] + credentials['graph_version'] + '/'
+    credentials['ig_username'] = 'ruru___cafe'
+    return credentials
+
+def call_api(url, endpoint_params=''):
+    if endpoint_params:
+        data = requests.get(url, endpoint_params)
+    else:
+        data = requests.get(url)
+    response = {}
+    response['json_data'] = json.loads(data.content)
+    return response
+
+
+
+
+def get_account_info(params):
+    # エンドポイント
+    # https://graph.facebook.com/{graph-api-version}/{ig-user-id}?fields={fields}&access_token={access-token}
+
+    endpoint_params = {}
+    # ユーザ名、プロフィール画像、フォロワー数、フォロー数、投稿数、メディア情報取得
+    endpoint_params['fields'] = 'business_discovery.username(' + params['ig_username'] + '){\
+        username,profile_picture_url,follows_count,followers_count,media_count,\
+        media.limit(10){comments_count,like_count,caption,media_url,permalink,timestamp,media_type,\
+        children{media_url,media_type}}}'
+    endpoint_params['access_token'] = params['access_token']
+    url = params['endpoint_base'] + params['instagram_account_id']
+    return call_api(url, endpoint_params)
+
+def get_media_insights(params):
+    endpoint_params = {}
+    endpoint_params['metric'] = 'engagement,impressions,reach,saved'
+    endpoint_params['access_token'] = params['access_token']
+    url = params['endpoint_base'] + params['media_id'] + '/insights'
+    return call_api(url, endpoint_params)
+
+def get_hashtag_id(params):
+    endpoint_params = {}
+    endpoint_params['user_id'] = params['instagram_account_id']
+    endpoint_params['q'] = params['hashtag_name']
+    endpoint_params['fields'] = 'id_name'
+    endpoint_params['access_token'] = params['access_token']
+    url = params['endpoint_base'] + 'ig_hashtag_search'
+    return call_api(url, endpoint_params)
+
+def get_hashtag_media(params):
+    endpoint_params = {}
+    endpoint_params['user_id'] = params['instagram_account_id']
+    endpoint_params['fields'] = 'id,media_type,media_url,children{media_url,media_type},permalink,caption,like_count,comments_count,timestamp'
+    endpoint_params['limit'] = 50
+    endpoint_params['access_token'] = params['access_token']
+    url = params['endpoint_base'] + params['hashtag_id'] + '/recent_media'
+    return call_api(url, endpoint_params)
+
+class IndexView(View):
+    def get(self, request, *args, **kwargs):
+        params = get_credentials()
+        account_response = get_account_info(params)
+        business_discovery = account_response['json_data']['business_discovery']
+        account_data = {
+            'profile_picture_url': business_discovery['profile_picture_url'],
+            'username': business_discovery['username'],
+            'followers_count': business_discovery['followers_count'],
+            'follows_count': business_discovery['follows_count'],
+            'media_count': business_discovery['media_count'],
+        }
+        today = date.today()
+
+        obj, created = Insight.objects.update_or_create(
+            label=today,
+            defaults={
+                'follower': business_discovery['followers_count'],
+                'follows': business_discovery['follows_count'],
+            }
+        )
+
+        media_insight_data = Insight.objects.all().order_by("label")
+        follower_data = []
+        follows_data = []
+        ff_data = []
+        label_data = []
+        for data in media_insight_data:
+            follower_data.append(data.follower)
+            follows_data.append(data.follows)
+            ff = math.floor((data.follower / data.follows) * 100) / 100
+            ff_data.append(ff)
+            label_data.append(data.label)
+
+        like = 0
+        comments = 0
+        count = 1
+        post_timestamp = ''
+        for data in business_discovery['media']['data']:
+            timestamp = localtime(datetime.strptime(data['timestamp'], '%Y-%m-%dT%H:%M:%S%z')).strftime('%Y-%m-%d')
+            if post_timestamp == timestamp:
+                like += data['like_count']
+                comments += data['comments_count']
+                count += 1
+            else:
+                like = data['like_count']
+                comments = data['comments_count']
+                post_timestamp = timestamp
+                count = 1
+
+            obj, created = Post.objects.update_or_create(
+                label=timestamp,
+                defaults={
+                    'like': like,
+                    'comments': comments,
+                    'count': count,
+                }
+            )
+
+        post_data = Post.objects.all().order_by("label")
+        like_data = []
+        comments_data = []
+        count_data = []
+        post_label_data = []
+        for data in post_data:
+            like_data.append(data.like)
+            comments_data.append(data.comments)
+            count_data.append(data.count)
+            post_label_data.append(data.label)
+
+        insight_data = {
+            'follower_data': follower_data,
+            'follows_data': follows_data,
+            'ff_data': ff_data,
+            'label_data': label_data,
+            'like_data': like_data,
+            'comments_data': comments_data,
+            'count_data': count_data,
+            'post_label_data': post_label_data,
+        }
+
+        latest_media_data = business_discovery['media']['data'][0]
+        params['media_id'] = latest_media_data['id']
+
+        # media_typeを定義する前に、media_responseを取得する
+        media_response = get_media_insights(params)
+
+        # media_responseがNoneでないことを確認
+        if media_response.get('json_data', {}).get('data'):
+            media_data = media_response['json_data']['data']
+        else:
+            media_data = None  # または適切なエラーハンドリング
+
+        # media_typeを定義するロジックをここに配置
+        if latest_media_data['media_type'] == 'CAROUSEL_ALBUM':
+            media_url = latest_media_data['children']['data'][0]['media_url']
+            if latest_media_data['children']['data'][0]['media_type'] == 'VIDEO':
+                media_type = 'VIDEO'
+            else:
+                media_type = 'IMAGE'
+        else:
+            media_url = latest_media_data.get('media_url', None)
+            media_type = latest_media_data['media_type']
+
+        # ここで、media_dataがNoneでないことを確認し、insight_media_dataに値を追加
+        if media_data:
+            insight_media_data = {
+                'caption': latest_media_data.get('caption', 'No caption available'),
+                'media_type': media_type,
+                'media_url': media_url,
+                'permalink': latest_media_data['permalink'],
+                'timestamp': localtime(datetime.strptime(latest_media_data['timestamp'], '%Y-%m-%dT%H:%M:%S%z')).strftime('%Y/%m/%d %H:%M'),
+                'like_count': latest_media_data['like_count'],
+                'comments_count': latest_media_data['comments_count'],
+                'engagement': media_data[0]['values'][0]['value'],
+                'impression': media_data[1]['values'][0]['value'],
+                'reach': media_data[2]['values'][0]['value'],
+                'save': media_data[3]['values'][0]['value'],
+            }
+        else:
+            # media_dataがNoneの場合の処理をここに追加
+            insight_media_data = {
+                'caption': latest_media_data.get('caption', 'No caption available'),
+                'media_type': media_type,
+                'media_url': media_url,
+                'permalink': latest_media_data['permalink'],
+                'timestamp': localtime(datetime.strptime(latest_media_data['timestamp'], '%Y-%m-%dT%H:%M:%S%z')).strftime('%Y/%m/%d %H:%M'),
+                'like_count': latest_media_data['like_count'],
+                'comments_count': latest_media_data['comments_count'],
+                'engagement': None,  # または適切なデフォルト値
+                'impression': None,
+                'reach': None,
+                'save': None,
+            }
+
+        return render(request, 'app/index.html', {
+            'today': today.strftime('%Y-%m-%d'),
+            'account_data': account_data,
+            'insight_data': json.dumps(insight_data),
+            'insight_media_data': insight_media_data,
+        })
+
+
+class HashTagView(View):
+    def get_media_list(self, hashtag_media_response, hashtag_media_list):
+        # APIレスポンスの中に'json_data'と'data'が存在するか確認
+        if 'json_data' in hashtag_media_response and 'data' in hashtag_media_response['json_data']:
+            for item in hashtag_media_response['json_data']['data']:
+                if item.get('media_type') == 'CAROUSEL_ALBUM':
+                    # CAROUSEL_ALBUMの場合のメディアURL取得
+                    media_url = item.get('children', {}).get('data', [{}])[0].get('media_url', 'http://placehold.jp/500x500.png?text=None')
+                    media_type = item.get('children', {}).get('data', [{}])[0].get('media_type', 'UNKNOWN')
+                else:
+                    media_url = item.get('media_url', 'http://placehold.jp/500x500.png?text=None')
+                    media_type = item.get('media_type', 'UNKNOWN')
+
+                # タイムスタンプの取得と変換
+                timestamp_str = item.get('timestamp')
+                if timestamp_str:
+                    try:
+                        timestamp = localtime(datetime.strptime(timestamp_str, '%Y-%m-%dT%H:%M:%S%z')).strftime('%Y-%m-%d')
+                    except ValueError:
+                        timestamp = 'Unknown'
+                else:
+                    timestamp = 'Unknown'  # 適切なデフォルト値
+
+                # ハッシュタグメディアリストに追加
+                hashtag_media_list.append([
+                    media_type,
+                    media_url,
+                    item.get('permalink', 'http://placehold.jp/500x500.png?text=None'),  # デフォルト値
+                    item.get('like_count', 0),
+                    item.get('comments_count', 0),
+                    timestamp
+                ])
+        else:
+            print("No data found in hashtag_media_response.")  # デバッグ用
+
+        return hashtag_media_list
+
+
+    def get(self, request, *args, **kwargs):
+        form = HashTagForm(request.POST or None)
+
+        return render(request, 'app/search.html', {
+            'form': form
+        })
+
+    def post(self, request, *args, **kwargs):
+        form = HashTagForm(request.POST or None)
+
+        if form.is_valid():
+            hashtag = form.cleaned_data['hashtag']
+            params = get_credentials()
+            params['hashtag_name'] = hashtag
+            hashtag_id_response = get_hashtag_id(params)
+            params['hashtag_id'] = hashtag_id_response['json_data']['data'][0]['id'];
+            hashtag_media_response = get_hashtag_media(params)
+            hashtag_media_list = []
+            hashtag_media_list = self.get_media_list(hashtag_media_response, hashtag_media_list)
+
+            while True:
+                if not hashtag_media_response['json_data'].get('paging'):
+                    break
+                next_url = hashtag_media_response['json_data']['paging']['next']
+                hashtag_data = hashtag_media_response['json_data']['data']
+                if hashtag_data and next_url:
+                    hashtag_media_response = call_api(next_url)
+                    hashtag_media_list = self.get_media_list(hashtag_media_response, hashtag_media_list)
+                else:
+                    break
+            hashtag_media_data = pd.DataFrame(hashtag_media_list, columns=[
+                'media_type',
+                'media_url',
+                'permalink',
+                'like_count',
+                'comments_count',
+                'timestamp',
+            ])
+
+            hashtag_media_data = hashtag_media_data.sort_values(['like_count', 'comments_count'], ascending=[False, False])
+
+            post_counts = hashtag_media_data['timestamp'].value_counts().to_dict()
+
+            for key, value in post_counts.items():
+                obj, created = HashTag.objects.update_or_create(
+                    label=key,
+                    tag=hashtag,
+                    defaults={
+                        'count': value,
+                    }
+                )
+
+            hashtag_data = HashTag.objects.filter(tag=hashtag).order_by("label")
+            count_data = []
+            label_data = []
+            for data in hashtag_data:
+                count_data.append(data.count)
+                label_data.append(data.label)
+
+            hashtag_count_data = {
+                'count_data': count_data,
+                'label_data': label_data,
+            }
+
+            return render(request, 'app/hashtag.html', {
+                'hashtag_media_data': hashtag_media_data,
+                'hashtag': hashtag,
+                'hashtag_count_data': json.dumps(hashtag_count_data),
+            })
+        else:
+            redirect('hashtag')
