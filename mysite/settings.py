@@ -119,8 +119,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
+import environ
+import os
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # 追加したい行
 try:
     from .local_settings import *
 except ImportError:
@@ -130,8 +133,7 @@ if not DEBUG:
     import django_heroku
     django_heroku.settings(locals())
 
-import environ
-import os
+
 
 env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, '.env'))
@@ -141,10 +143,3 @@ INSTAGRAM_ACCOUNT_ID = env('INSTAGRAM_ACCOUNT_ID')
 
 # settings.py
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-import os
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
