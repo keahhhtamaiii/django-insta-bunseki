@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
     'insta-bunseki-80c5a282e88d.herokuapp.com',  # HerokuアプリのURLを追加
-    '.herokuapp.com'  # 任意で追加
+    '.herokuapp.com',  # 任意で追加
 ]
 
 
