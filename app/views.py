@@ -245,6 +245,13 @@ class IndexView(View):
 class HashtagView(View):
     # メディアのリストを作成
     def get_media_list(self, hashtag_media_response, hashtag_media_list):
+        # 'data' キーがレスポンスに含まれているか確認
+        if 'data' not in hashtag_media_response['json_data']:
+            # エラー処理やログ、もしくはデフォルトの動作を指定
+            print("Error: 'data' not found in response.")
+            return hashtag_media_list  # 空のリストを返すなど適切な処理
+
+        # 'data' キーがある場合のみ処理を続ける
         for item in hashtag_media_response['json_data']['data']:
             # カルーセルの場合は一番最初のメディアを取得
             if item['media_type'] == 'CAROUSEL_ALBUM':
@@ -263,6 +270,7 @@ class HashtagView(View):
             # 投稿日
             timestamp = localtime(datetime.strptime(item['timestamp'], '%Y-%m-%dT%H:%M:%S%z')).strftime('%Y-%m-%d')
 
+            # like_count と comments_count を get で取得し、存在しない場合は 0 をデフォルトとする
             like_count = item.get('like_count', 0)
             comments_count = item.get('comments_count', 0)
 
