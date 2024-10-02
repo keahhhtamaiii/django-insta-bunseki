@@ -1,4 +1,4 @@
 from django import forms
 
-class HashTagForm(forms.Form):
+class HashtagForm(forms.Form):
     hashtag = forms.CharField(max_length=100, label='ハッシュタグ')
