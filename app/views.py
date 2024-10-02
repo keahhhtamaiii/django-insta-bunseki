@@ -263,12 +263,15 @@ class HashtagView(View):
             # 投稿日
             timestamp = localtime(datetime.strptime(item['timestamp'], '%Y-%m-%dT%H:%M:%S%z')).strftime('%Y-%m-%d')
 
+            like_count = item.get('like_count', 0)
+            comments_count = item.get('comments_count', 0)
+
             hashtag_media_list.append([
                 media_type,
                 media_url,
                 item['permalink'],
-                item['like_count'],
-                item['comments_count'],
+                like_count,
+                comments_count,
                 timestamp,
             ])
         return hashtag_media_list
