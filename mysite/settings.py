@@ -25,7 +25,12 @@ SECRET_KEY = 'elrb5@^f&uxdj*9iyq)@&^z_)&08(98@e7p!s5g(qcq2^jwt42'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['insta-bunseki.herokuapp.com']  # ここにHerokuアプリ名を追加
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'insta-bunseki-80c5a282e88d.herokuapp.com',  # HerokuアプリのURLを追加
+    '.herokuapp.com'  # 任意で追加
+]
 
 
 # Application definition
