@@ -4,7 +4,7 @@ from datetime import datetime, date
 from django.utils.timezone import localtime
 from django.conf import settings
 from .models import Insight, Post, HashTag
-from .forms import HashtagForm
+from .forms import HashTagForm
 from .models import Insight, Post
 from django.http.response import HttpResponse
 import requests
@@ -15,6 +15,10 @@ import pandas as pd
 class CallbackView(View):
     def get(self, request, *args, **kwargs):
         return HttpResponse('OK')
+
+class HashTagView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'app/hashtag.html', {})
 
 
 # Instagram Graph API認証情報
@@ -272,14 +276,14 @@ class HashtagView(View):
 
     def get(self, request, *args, **kwargs):
         # 検索フォーム
-        form = HashtagForm(request.POST or None)
+        form = HashTagForm(request.POST or None)
 
         return render(request, 'app/search.html', {
             'form': form
         })
 
     def post(self, request, *args, **kwargs):
-        form = HashtagForm(request.POST or None)
+        form = HashTagForm(request.POST or None)
 
         # フォームのバリデーション
         if form.is_valid():
