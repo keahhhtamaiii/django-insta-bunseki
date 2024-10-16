@@ -41,9 +41,13 @@ def call_api(url, endpoint_params=''):
             data = requests.get(url)
 
         data.raise_for_status()  # HTTPエラーをキャッチ
+
         response = {}
         # API送信結果をjson形式で保存
         response['json_data'] = json.loads(data.content)
+        # レスポンス内容の確認用ログ
+        print(f"API response for {url}: {response['json_data']}")
+
         return response
     except requests.exceptions.HTTPError as err:
         print(f"HTTP error occurred: {err}")
@@ -55,17 +59,22 @@ def call_api(url, endpoint_params=''):
 # ユーザーアカウント情報取得
 def get_account_info(params):
     # エンドポイント
-    # https://graph.facebook.com/{graph-api-version}/{ig-user-id}?fields={fields}&access_token={access-token}
-
     endpoint_params = {}
-    # ユーザ名、プロフィール画像、フォロワー数、フォロー数、投稿数、メディア情報取得
     endpoint_params['fields'] = 'business_discovery.username(' + params['ig_username'] + '){\
         username,profile_picture_url,follows_count,followers_count,media_count,\
         media.limit(10){comments_count,like_count,caption,media_url,permalink,timestamp,media_type,\
         children{media_url,media_type}}}'
     endpoint_params['access_token'] = params['access_token']
     url = params['endpoint_base'] + params['instagram_account_id']
-    return call_api(url, endpoint_params)
+
+    account_response = call_api(url, endpoint_params)
+
+    if not account_response['json_data']:
+        # エラーが発生している場合の処理
+        print("Error: Could not retrieve account information")
+        return None  # もしくはデフォルト値を返す
+
+    return account_response
 
 
 # 特定メディアIDのインサイト取得
