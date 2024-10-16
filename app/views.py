@@ -5,7 +5,6 @@ from django.utils.timezone import localtime
 from django.conf import settings
 from .models import Insight, Post, HashTag
 from .forms import HashtagForm
-from .models import Insight, Post
 from django.http.response import HttpResponse
 import requests
 import json
@@ -26,7 +25,7 @@ def get_credentials():
     credentials['access_token'] = settings.ACCESS_TOKEN
     credentials['instagram_account_id'] = settings.INSTAGRAM_ACCOUNT_ID
     credentials['graph_domain'] = 'https://graph.facebook.com/'
-    credentials['graph_version'] = 'v8.0'
+    credentials['graph_version'] = 'v20.0'
     credentials['endpoint_base'] = credentials['graph_domain'] + credentials['graph_version'] + '/'
     credentials['ig_username'] = 'ruru___cafe'
     return credentials
@@ -34,16 +33,24 @@ def get_credentials():
 
 # Instagram Graph APIコール
 def call_api(url, endpoint_params=''):
-    # API送信
-    if endpoint_params:
-        data = requests.get(url, endpoint_params)
-    else:
-        data = requests.get(url)
+    try:
+        # API送信
+        if endpoint_params:
+            data = requests.get(url, endpoint_params)
+        else:
+            data = requests.get(url)
 
-    response = {}
-    # API送信結果をjson形式で保存
-    response['json_data'] = json.loads(data.content)
-    return response
+        data.raise_for_status()  # HTTPエラーをキャッチ
+        response = {}
+        # API送信結果をjson形式で保存
+        response['json_data'] = json.loads(data.content)
+        return response
+    except requests.exceptions.HTTPError as err:
+        print(f"HTTP error occurred: {err}")
+        return {'json_data': {}}  # エラー時は空のデータを返す
+    except Exception as err:
+        print(f"An error occurred: {err}")
+        return {'json_data': {}}  # エラー時は空のデータを返す
 
 # ユーザーアカウント情報取得
 def get_account_info(params):
@@ -217,7 +224,8 @@ class IndexView(View):
             else:
                 media_type = 'IMAGE'
         else:
-            media_url = latest_media_data['media_url']
+            print(latest_media_data)  # レスポンスを確認
+            media_url = latest_media_data.get('media_url', 'URL not available')
             media_type = latest_media_data['media_type']
 
         # メディアのインサイトデータ
@@ -310,7 +318,7 @@ class HashtagView(View):
             hashtag_id_response = get_hashtag_id(params)
 
             # ハッシュタグID設定
-            params['hashtag_id'] = hashtag_id_response['json_data']['data'][0]['id'];
+            params['hashtag_id'] = hashtag_id_response['json_data']['data'][0]['id']
 
             # ハッシュタグ検索
             hashtag_media_response = get_hashtag_media(params)
@@ -321,20 +329,10 @@ class HashtagView(View):
             hashtag_media_list = self.get_media_list(hashtag_media_response, hashtag_media_list)
 
             # 次のデータが存在するまで繰り返す
-            while True:
-                # 次のデータが存在しない場合はbreak
-                if not hashtag_media_response['json_data'].get('paging'):
-                    break
+            while hashtag_media_response['json_data'].get('paging', {}).get('next'):
                 next_url = hashtag_media_response['json_data']['paging']['next']
-                hashtag_data = hashtag_media_response['json_data']['data']
-                if hashtag_data and next_url:
-                    # 次のデータを取得
-                    hashtag_media_response = call_api(next_url)
-                    # メディアのリストを作成
-                    hashtag_media_list = self.get_media_list(hashtag_media_response, hashtag_media_list)
-                else:
-                    # 次のデータが存在しない場合はbreak
-                    break
+                hashtag_media_response = call_api(next_url)
+                hashtag_media_list = self.get_media_list(hashtag_media_response, hashtag_media_list)
 
             # データフレームの作成
             hashtag_media_data = pd.DataFrame(hashtag_media_list, columns=[
@@ -384,4 +382,4 @@ class HashtagView(View):
                 'hashtag_count_data': json.dumps(hashtag_count_data),
             })
         else:
-            redirect('hashtag')
+            return render(request, 'app/search.html', {'form': form})
